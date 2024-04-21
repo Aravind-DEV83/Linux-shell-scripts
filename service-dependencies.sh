@@ -63,7 +63,7 @@ get_teleport() {
         sudo installer -pkg $DOWNLOADS_FOLDER/teleport-15.2.2.pkg -target /
         echo "✅ Teleport got installed"
     else
-        echo "✅ Teleport is already installed"
+        echo "Teleport is already installed"
     fi
 
     tsh version
