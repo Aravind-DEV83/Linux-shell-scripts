@@ -2,7 +2,7 @@
 # Author: Aravind Jarpala
 # Date Created: 19/04/2024
 # Description: This script is used to download all dependices for setting up local development envrionment, services include: Google Cloud SDK, JDK, AWS CLI, Kubectl, Teleport, Docker, Node, NPM
-# Date Modified: 20/04/2024
+# Date Modified: 21/04/2024
 
 # Defined Variables
 DOWNLOADS_FOLDER="$HOME/Downloads"
@@ -10,7 +10,7 @@ echo "Script started running...."
 
 
 install_homebrew() {
-    local os= $1
+    local os=$1
     if [[ $os =~ [macMac]$ ]]; then
         if ! command -v brew &> /dev/null; then
             curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
@@ -23,7 +23,7 @@ install_homebrew() {
 }
 
 get_docker() {
-    local os= $1
+    local os=$1
 
     if [[ $os =~ [macMac]$ ]]; then
         echo "Installing Docker using Homebrew..."
@@ -52,6 +52,7 @@ get_docker() {
         else 
             echo "Docker already installed"
         fi
+    fi
 }
 
 get_teleport() {
@@ -69,7 +70,7 @@ get_teleport() {
 }
 
 get_awscli() {
-    local os= $1
+    local os=$1
     if ! command -v aws &> /dev/null; then
         if [[ $os =~ [macMac]$ ]]; then
             echo "Downloading AWS CLI using brew....." 
@@ -91,7 +92,7 @@ get_awscli() {
 }
 
 get_google_cloud_sdk() {
-    local os= $1
+    local os=$1
     echo "Downloading Google Cloud SDK... "
     if [[ $os =~ [macMac]$ ]]; then
         echo "Downloading Google Cloud SDK using brew... "
@@ -112,6 +113,7 @@ get_google_cloud_sdk() {
         else
             echo "You can manually navigate to google-cloud-sdk directory and run the installation script."
         fi
+    fi
 
     echo "Installing Kubectl..."
     # gcloud components install kubectl
@@ -123,6 +125,7 @@ get_google_cloud_sdk() {
 
     if [[ $auth_choice =~ [Yy]$ ]]; then
         # gcloud auth login
+        echo
     else
         echo "SDK not authorized. You can manually authorize SDK later using 'gcloud auth login'."
     fi
@@ -148,13 +151,17 @@ get_jdk() {
 }
 
 get_node() {
-    local os= $1
+    local os=$1
     if ! command -v node &> /dev/null; then
         if [[ $os =~ [macMac]$ ]]; then
-            echo "Downloading Node using brew..."
+            echo "Installing Node using brew..."
             # brew install node@20
-        # else
+        else
+            echo "Installing Node..."
+            # sudo apt install nodejs
 
+            echo "Installing NPM..."
+            # sudo apt install npm 
         fi
 
         echo "Verifying the right Node.js version is in the environment"
@@ -168,17 +175,35 @@ get_node() {
 
 }
 
-
-read -p "Do you want to install dependencies on whcih OS (linux/mac):  " os_info
-
-main() {
-    install_homebrew $os_info
+get_all() {
+    local os=$1
+    install_homebrew $os
     get_teleport
-    get_jdk $os_info
-    get_google_cloud_sdk $os_info
-    get_docker $os_info
-    get_node $os_info
-    echo "Installed all dependencies required for development environment"
+    get_jdk $os
+    get_google_cloud_sdk $os
+    get_docker $os
+    get_node $os
 }
 
-main
+main() {
+    local cmd=$1
+    local os=$2
+    case "$cmd" in
+        "homebrew") install_homebrew "$os";;
+        "install") get_teleport ;;
+        "jdk") get_jdk $os;;
+        "google-cloud-sdk") get_google_cloud_sdk $os;;
+        "docker") get_docker $os;;
+        "node") get_node "$os" ;;
+        "all") get_all "$os";;
+        *)
+            usage (){
+                echo "Usage: $cmd [install]"
+            }
+            exit 1
+            ;;
+    esac
+    exit 0
+}
+read -p "Do you want to install dependencies on whcih OS (linux/mac):  " os_info
+main "$@" "$os_info"
