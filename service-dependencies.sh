@@ -8,6 +8,19 @@
 DOWNLOADS_FOLDER="$HOME/Downloads"
 echo "Script started running...."
 
+usage() {
+    cat << EOF
+Usage:  $1 brew
+        $1 teleport
+        $1 jdk
+        $1 aws
+        $1 google-cloud-sdk
+        $1 docker
+        $1 node
+        $1 all
+EOF
+}
+
 
 install_homebrew() {
     local os=$1
@@ -215,9 +228,7 @@ main() {
         "node") get_node "$os" ;;
         "all") get_all "$os";;
         *)
-            usage (){
-                echo "Usage: $cmd [install]"
-            }
+            usage
             exit 1
             ;;
     esac
