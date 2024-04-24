@@ -26,7 +26,8 @@ install_homebrew() {
     local os=$1
     if [[ $os =~ [macMac]$ ]]; then
         if ! command -v brew &> /dev/null; then
-            curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
+            # curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         else
             echo "Homebrew is already installed"
         fi
